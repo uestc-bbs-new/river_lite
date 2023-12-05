@@ -54,7 +54,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "com.xusun000.river_lite_2022"
+        applicationId "com.xusun000.river_lite_2023_test"
         minSdkVersion 21
         targetSdkVersion flutterTargetSdkVersion
         versionCode flutterVersionCode.toInteger()
