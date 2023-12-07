@@ -10,6 +10,7 @@ import 'package:offer_show/asset/svg.dart';
 import 'package:offer_show/asset/toWebUrl.dart';
 import 'package:offer_show/components/newNaviBar.dart';
 import 'package:offer_show/util/cache_manager.dart';
+import 'package:offer_show/util/mid_request.dart';
 import 'package:offer_show/util/provider.dart';
 import 'package:offer_show/util/storage.dart';
 import 'package:provider/provider.dart';
@@ -25,6 +26,47 @@ class _SettingState extends State<Setting> {
   List<Widget> _buildWidget() {
     List<Widget> tmp = [];
     tmp.addAll([
+      ResponsiveWidget(
+        child: ListTile(
+          title: Text(
+            "服务器地址",
+            style: TextStyle(
+                color: Colors.redAccent,
+                fontWeight: FontWeight.bold),
+          ),
+          subtitle: Text(
+            "使用测试服务器测试手机客户端能否正常使用",
+            style: TextStyle(
+                color: Provider.of<ColorProvider>(context).isDark
+                    ? os_dark_white
+                    : os_deep_grey),
+          ),
+          trailing: Icon(
+            Icons.chevron_right_rounded,
+            color: Provider.of<ColorProvider>(context).isDark
+                ? os_dark_dark_white
+                : os_deep_grey,
+          ),
+          onTap: () async {
+            String value = await getServerOrigin();
+            showDialog(context: context, builder: (context) => AlertDialog(
+              title: Text('请输入服务器地址'),
+              content: TextFormField(
+                onChanged: (value) {
+                  setServerOrigin(value);
+                },
+                decoration: InputDecoration(hintText: '包含协议、域名、端口及末尾的斜杠'),
+                initialValue: value,
+              ),
+              actions: [
+                MaterialButton(onPressed: () {
+                  Navigator.pop(context);
+                }, child: Text('关闭')),
+              ],
+            ));
+          },
+        ),
+      ),
       ResponsiveWidget(
         child: SwitchListTile(
           inactiveTrackColor: Provider.of<ColorProvider>(context).isDark

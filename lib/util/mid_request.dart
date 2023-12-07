@@ -10,13 +10,34 @@ import 'package:dio/dio.dart';
 import 'package:offer_show/asset/cookie.dart';
 import 'package:offer_show/util/storage.dart';
 
-String base_url = "https://bbs.uestc.edu.cn/";
+const base_url = "https://bbs.uestc.edu.cn/";
 
 class ServerConfig {
   String url = base_url + "mobcent/app/web/index.php";
 }
 
 bool isLog = true; //控制是否打印网络输出日志
+
+const kServerOrigin = 'server-origin';
+final baseUrlRegEx = RegExp('^${RegExp.escape(base_url)}', caseSensitive: false);
+
+Future<String> getServerOrigin() async {
+  final value = await getStorage(key: kServerOrigin, initData: base_url);
+  if (value is String) {
+    return value;
+  }
+  return base_url;
+}
+Future<void> setServerOrigin(String value) {
+  return setStorage(key: kServerOrigin, value: value);
+}
+Future<String> rebaseUrl(String url) async {
+  final origin = await getServerOrigin();
+  if (origin == base_url) {
+    return url;
+  }
+  return url.replaceFirst(baseUrlRegEx, origin);
+}
 
 class XHttp {
   pureHttpWithCookie(
@@ -33,7 +54,7 @@ class XHttp {
     dio.options.connectTimeout = 10000;
     dio.options.receiveTimeout = 10000;
     Response response = await dio
-        .request(url,
+        .request(await rebaseUrl(url),
             data: param,
             options: Options(
               method: method ?? "POST",
@@ -63,7 +84,7 @@ class XHttp {
     dio.options.receiveTimeout = 10000;
     if (isLog) print("地址:$url入参:$param");
     Response response = await dio
-        .request(url, data: param, options: Options(method: method ?? "POST"))
+        .request(await rebaseUrl(url), data: param, options: Options(method: method ?? "POST"))
         .catchError(
           (err) {},
         );
@@ -87,7 +108,7 @@ class XHttp {
     Map? param, //参数
   }) async {
     var dio = Dio();
-    dio.options.baseUrl = ServerConfig().url;
+    dio.options.baseUrl = await rebaseUrl(ServerConfig().url);
     dio.options.contentType = Headers.formUrlEncodedContentType;
     dio.options.responseType = ResponseType.plain;
     dio.options.connectTimeout = noTimeOut ?? false ? 10000000 : 10000;
