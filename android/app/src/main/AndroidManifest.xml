@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.xusun000.river_lite_2022">
+    package="com.xusun000.river_lite_2024">
    <application
         android:requestLegacyExternalStorage="true"
         android:extractNativeLibs="true"
