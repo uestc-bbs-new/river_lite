@@ -429,13 +429,17 @@ class Api {
     String myinfo_txt = await getStorage(key: "myinfo", initData: "");
     if (myinfo_txt != "") {
       Map<String, dynamic> myinfo = jsonDecode(myinfo_txt);
+      final isVpn = await isVPNEnabled();
       var request = http.MultipartRequest(
         'POST',
         Uri.parse(
-          base_url +
+          (isVpn ? vpn_base_url : base_url) +
               'mobcent/app/web/index.php?r=forum/sendattachmentex&type=image&module=forum&accessToken=${myinfo["token"]}&accessSecret=${myinfo["secret"]}',
         ),
       );
+      if (isVpn) {
+        request.headers['Cookie'] = await getVPNCookie();
+      }
       for (var i = 0; i < imgs!.length; i++) {
         String? tmp_jpg_path = imgs[i].path;
         if (imgs[i].path.split(".")[1] == "heic") {
